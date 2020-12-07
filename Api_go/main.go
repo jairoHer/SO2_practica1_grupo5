@@ -10,19 +10,15 @@ import (
  "strings"
 )
 
-type Article struct {
+type Memoria struct {
   Total_RAM string `json:"total"`
   RAM_consumida string `json:"consumida"`
   Porcentaje string `json:"porcentaje"`
 }
 
-type Articles []Article
 
-func allArticles(w http.ResponseWriter, r *http.Request){
-	/*articles := Articles{
-		Article{Title:"Prueba titulo", Desc:"Descripcion prueba", Content: "Hola mundo"},
-	}*/
-	ar , err := ioutil.ReadFile("modulo")
+func memoria_info(w http.ResponseWriter, r *http.Request){
+	ar , err := ioutil.ReadFile("/proc/m_grupo5")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -31,18 +27,17 @@ func allArticles(w http.ResponseWriter, r *http.Request){
 	Ram_tot := entradaLimpia[0]
 	ram_lib := entradaLimpia[1]
 	porcen := strings.TrimSuffix(entradaLimpia[2], "\n")
-	var xd Article
-	xd = Article{Total_RAM: Ram_tot, RAM_consumida: ram_lib, Porcentaje: porcen}
+	var xd Memoria
+	xd = Memoria{Total_RAM: Ram_tot, RAM_consumida: ram_lib, Porcentaje: porcen}
 	fmt.Println("Endpoint de los valores del modulo")
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(xd)
 	fmt.Println(entrada)
 	fmt.Printf("%q\n", strings.Split(entrada, " "))
-	//json.NewEncoder(w).Encode(articles)
 }
 
-func testPostArticles(w http.ResponseWriter, r *http.Request){
-	fmt.Fprintf(w, "Test POST endopoint worked")
+func killProcess(w http.ResponseWriter, r *http.Request){
+	fmt.Fprintf(w, "POST para eliminar proceso")
 
 }
 
@@ -54,8 +49,8 @@ func homePage(w http.ResponseWriter, r *http.Request){
 func handleRequests(){
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/",homePage)
-	myRouter.HandleFunc("/info",allArticles).Methods("GET")
-	myRouter.HandleFunc("/articulos",testPostArticles).Methods("POST")
+	myRouter.HandleFunc("/info",memoria_info).Methods("GET")
+	myRouter.HandleFunc("/kill",killProcess).Methods("POST")
 	log.Fatal(http.ListenAndServe(":5050",myRouter))
 }
 
