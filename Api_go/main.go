@@ -16,6 +16,13 @@ type Memoria struct {
   Porcentaje string `json:"porcentaje"`
 }
 
+type procesos struct {
+	total_proc string `json:"total"`
+	ejecucion string `json:"ejecucion"`
+	suspendidos string `json:"suspendidos"`
+	detenidos string `json:"detenidos"`
+	zombies string `json:"zombies"`
+}
 
 func memoria_info(w http.ResponseWriter, r *http.Request){
 	ar , err := ioutil.ReadFile("/proc/m_grupo5")
