@@ -7,6 +7,7 @@ import (
  "encoding/json"
  "github.com/gorilla/mux"
  "io/ioutil"
+ "os/exec"
  "strings"
 )
 
@@ -52,8 +53,22 @@ func killProcess(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type", "application/json")
 	var proce procesoBorrado
 	_ = json.NewDecoder(r.Body).Decode(&proce)
-	fmt.Println(proce.Proceso)
+	PID := string(proce.Proceso)
+	fmt.Println(PID)
 	json.NewEncoder(w).Encode(proce)
+	//_, err := exec.Command("sh", "-c", "echo '"+ sudopassword +"' | sudo -S pkill -SIGINT my_app_name").Output()
+	_, err := exec.Command("sh", "-c", "kill "+PID).Output()
+	if err != nil {
+		fmt.Println("No se pudo eliminar el proceso")
+	} else {
+		fmt.Println("Se elimino el proceso con PID: "+PID)
+	}
+	/*out, err := exec.Command("ls").Output()
+	if err != nil{
+		fmt.Println("No se pudo eliminar el proceso")
+	}
+	output := string(out[:])
+	fmt.Println(output)*/
 	//w.Write([]byte(`{"message": "post called"}`))
 }
 
