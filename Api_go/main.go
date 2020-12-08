@@ -17,11 +17,15 @@ type Memoria struct {
 }
 
 type procesos struct {
-	total_proc string `json:"total"`
-	ejecucion string `json:"ejecucion"`
-	suspendidos string `json:"suspendidos"`
-	detenidos string `json:"detenidos"`
-	zombies string `json:"zombies"`
+	Total_proc string `json:"total"`
+	Ejecucion string `json:"ejecucion"`
+	Suspendidos string `json:"suspendidos"`
+	Detenidos string `json:"detenidos"`
+	Zombies string `json:"zombies"`
+}
+
+type procesoBorrado struct {
+	Proceso string `json:"proceso"`
 }
 
 func memoria_info(w http.ResponseWriter, r *http.Request){
@@ -44,8 +48,13 @@ func memoria_info(w http.ResponseWriter, r *http.Request){
 }
 
 func killProcess(w http.ResponseWriter, r *http.Request){
-	fmt.Fprintf(w, "POST para eliminar proceso")
-
+	//fmt.Fprintf(w, "POST para eliminar proceso")
+	w.Header().Set("Content-Type", "application/json")
+	var proce procesoBorrado
+	_ = json.NewDecoder(r.Body).Decode(&proce)
+	fmt.Println(proce.Proceso)
+	json.NewEncoder(w).Encode(proce)
+	//w.Write([]byte(`{"message": "post called"}`))
 }
 
 func homePage(w http.ResponseWriter, r *http.Request){
