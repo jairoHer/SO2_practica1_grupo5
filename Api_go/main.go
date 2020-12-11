@@ -21,7 +21,7 @@ type procesos struct {
 	Total_proc string `json:"total"`
 	Idle string `json:"idle"`
 	Running string `json:"running"`
-	Sleep string `json:"Sleep"`
+	Sleep string `json:"sleep"`
 	Stoped string `json:"stoped"`
 	Zombie string `json:"zombie"`
 }

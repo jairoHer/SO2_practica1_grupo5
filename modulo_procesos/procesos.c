@@ -24,15 +24,21 @@ unsigned long copy_to_user(void __user *to,const void *from, unsigned long n);
 unsigned long copy_from_user(void *to,const void __user *from,unsigned long n);
 MODULE_LICENSE("PROCESOS");
 MODULE_AUTHOR("201503750");
-int proc_idle = 0;
+/*int proc_idle = 0;
 int proc_running = 0;
 int proc_sleep = 0;
 int proc_stoped = 0;
 int proc_zombie = 0;
-uid_t uid;
+uid_t uid;*/
 static struct proc_dir_entry *ent;
 
 static int myread (struct seq_file *buff, void *v){
+    int proc_idle = 0;
+    int proc_running = 0;
+    int proc_sleep = 0;
+    int proc_stoped = 0;
+    int proc_zombie = 0;
+    uid_t uid;
     printk(KERN_INFO "EMPEZANDO MODULO PROCESOS\n");
     seq_printf(buff, "%s","{\n");
     for_each_process( task ){            /*    for_each_process() es un MACRO para iterar ubicado en linux\sched\signal.h    */
