@@ -48,6 +48,16 @@ func memoria_info(w http.ResponseWriter, r *http.Request){
 	fmt.Printf("%q\n", strings.Split(entrada, " "))
 }
 
+func leerResumenProcesos(w http.ResponseWriter, r *http.Request){
+	ar , err := ioutil.ReadFile("/proc/proc_procesos")
+	if err != nil {
+		fmt.Println(err)
+	}
+	entrada := string(ar)
+	entradaLimpia := strings.Split(entrada, "-------------------------------------\n")
+	fmt.Println(entradaLimpia[1])
+}
+
 func killProcess(w http.ResponseWriter, r *http.Request){
 	//fmt.Fprintf(w, "POST para eliminar proceso")
 	w.Header().Set("Content-Type", "application/json")
@@ -81,6 +91,7 @@ func handleRequests(){
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/",homePage)
 	myRouter.HandleFunc("/info",memoria_info).Methods("GET")
+	myRouter.HandleFunc("/resumen_proc",leerResumenProcesos).Methods("GET")
 	myRouter.HandleFunc("/kill",killProcess).Methods("POST")
 	log.Fatal(http.ListenAndServe(":5050",myRouter))
 }
