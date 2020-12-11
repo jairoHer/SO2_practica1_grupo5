@@ -57,6 +57,7 @@ func leerResumenProcesos(w http.ResponseWriter, r *http.Request){
 	entradaLimpia := strings.Split(entrada, "-------------------------------------\n")
 	resumen := strings.Split(entradaLimpia[1],"\n")
 	//valores :=  obtenerResumen(resumen)
+	fmt.Println(resumen)
 	fmt.Println(entradaLimpia[1])
 	/*fmt.Println(valores[0])
 	fmt.Println(valores[1])
