@@ -38,12 +38,14 @@ static int myread (struct seq_file *buff, void *v){
     int proc_sleep = 0;
     int proc_stoped = 0;
     int proc_zombie = 0;
+    int num_proc = 0;
     uid_t uid;
     printk(KERN_INFO "EMPEZANDO MODULO PROCESOS\n");
     seq_printf(buff, "%s","{\n");
     for_each_process( task ){            /*    for_each_process() es un MACRO para iterar ubicado en linux\sched\signal.h    */
         uid = __kuid_val(task_uid(task));
-        seq_printf(buff, "%s","{\n");
+        num_proc++;
+        seq_printf(buff, "\"proceso%d\" %s",num_proc,"{\n");
         if(task->state == 1026){
             seq_printf(buff, "\t\tPID: \"%d\",\n\t\tPROCESS: \"%s\", \n\t\tUID: \"%d\", \n\t\tSTATE: \"%s\", \n\tCHILDS:[\n", task->pid, task->comm, uid, "I(idle)");
             proc_idle++;
