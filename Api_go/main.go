@@ -70,12 +70,13 @@ func leerResumenProcesos(w http.ResponseWriter, r *http.Request){
 
 func obtenerResumen(entrada[] string) []string{
 	var valores[]string
-	valores[0] = strings.Split(entrada[0],": ")[1]//Total
-	valores[1] = strings.Split(entrada[1],": ")[1]//IDLE
-	valores[2] = strings.Split(entrada[2],": ")[1]//RUNNING 
-	valores[3] = strings.Split(entrada[3],": ")[1]//SLEEP
-	valores[4] = strings.Split(entrada[4],": ")[1]//STOPED 
-	valores[5] = strings.Split(entrada[5],": ")[1]//ZOMBIE 
+	//valores = make([]string, 0,10)
+	valores = append(valores,strings.Split(entrada[0],": ")[1])//Total
+	valores = append(valores,strings.Split(entrada[1],": ")[1])//IDLE
+	valores = append(valores,strings.Split(entrada[2],": ")[1])//RUNNING 
+	valores = append(valores,strings.Split(entrada[3],": ")[1])//SLEEP
+	valores = append(valores,strings.Split(entrada[4],": ")[1])//STOPED 
+	valores = append(valores,strings.Split(entrada[5],": ")[1])//ZOMBIE 
 	return valores
 }
 
