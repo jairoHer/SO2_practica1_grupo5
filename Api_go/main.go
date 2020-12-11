@@ -55,7 +55,26 @@ func leerResumenProcesos(w http.ResponseWriter, r *http.Request){
 	}
 	entrada := string(ar)
 	entradaLimpia := strings.Split(entrada, "-------------------------------------\n")
+	resumen := strings.Split(entradaLimpia[1],"\n")
+	valores :=  obtenerResumen(resumen)
 	fmt.Println(entradaLimpia[1])
+	fmt.Println(valores[0])
+	fmt.Println(valores[1])
+	fmt.Println(valores[2])
+	fmt.Println(valores[3])
+	fmt.Println(valores[4])
+	fmt.Println(valores[5])
+}
+
+func obtenerResumen(entrada[] string) []string{
+	var valores[]string
+	valores[0] = strings.Split(entrada[0],": ")[1]//Total
+	valores[1] = strings.Split(entrada[1],": ")[1]//IDLE
+	valores[2] = strings.Split(entrada[2],": ")[1]//RUNNING 
+	valores[3] = strings.Split(entrada[3],": ")[1]//SLEEP
+	valores[4] = strings.Split(entrada[4],": ")[1]//STOPED 
+	valores[5] = strings.Split(entrada[5],": ")[1]//ZOMBIE 
+	return valores
 }
 
 func killProcess(w http.ResponseWriter, r *http.Request){
