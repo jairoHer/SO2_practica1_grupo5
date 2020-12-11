@@ -19,10 +19,11 @@ type Memoria struct {
 
 type procesos struct {
 	Total_proc string `json:"total"`
-	Ejecucion string `json:"ejecucion"`
-	Suspendidos string `json:"suspendidos"`
-	Detenidos string `json:"detenidos"`
-	Zombies string `json:"zombies"`
+	Idle string `json:"idle"`
+	Running string `json:"running"`
+	Sleep string `json:"Sleep"`
+	Stoped string `json:"stoped"`
+	Zombie string `json:"zombie"`
 }
 
 type procesoBorrado struct {
@@ -49,6 +50,7 @@ func memoria_info(w http.ResponseWriter, r *http.Request){
 }
 
 func leerResumenProcesos(w http.ResponseWriter, r *http.Request){
+	w.Header().Set("Content-Type", "application/json")
 	ar , err := ioutil.ReadFile("/proc/proc_procesos")
 	if err != nil {
 		fmt.Println(err)
@@ -57,10 +59,10 @@ func leerResumenProcesos(w http.ResponseWriter, r *http.Request){
 	entradaLimpia := strings.Split(entrada, "-------------------------------------\n")
 	resumen := strings.Split(entradaLimpia[1],"\n")
 	valores :=  obtenerResumen(resumen)
+	var procs procesos
+	procs = procesos{Total_proc: valores[0], Idle: valores[1], Running: valores[2], Sleep: valores[3], Stoped: valores[4],Zombie:valores[5]}
 	fmt.Println(resumen)
-	fmt.Println(resumen[0])
-	fmt.Println(resumen[5])
-	fmt.Println(valores)
+	json.NewEncoder(w).Encode(procs)
 	/*fmt.Println(valores[1])
 	fmt.Println(valores[2])
 	fmt.Println(valores[3])
