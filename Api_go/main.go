@@ -60,7 +60,7 @@ func leerResumenProcesos(w http.ResponseWriter, r *http.Request){
 	fmt.Println(resumen)
 	fmt.Println(resumen[0])
 	fmt.Println(resumen[5])
-	fmt.Println(valores[0])
+	fmt.Println(valores)
 	/*fmt.Println(valores[1])
 	fmt.Println(valores[2])
 	fmt.Println(valores[3])
