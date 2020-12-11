@@ -45,17 +45,17 @@ static int myread (struct seq_file *buff, void *v){
     for_each_process( task ){            /*    for_each_process() es un MACRO para iterar ubicado en linux\sched\signal.h    */
         uid = __kuid_val(task_uid(task));
         num_proc++;
-        seq_printf(buff, "\"proceso%d\" %s",num_proc,"{\n");
+        seq_printf(buff, "\"proceso%d\": %s",num_proc,"{\n");
         if(task->state == 1026){
-            seq_printf(buff, "\t\tPID: \"%d\",\n\t\tPROCESS: \"%s\", \n\t\tUID: \"%d\", \n\t\tSTATE: \"%s\", \n\tCHILDS:[\n", task->pid, task->comm, uid, "I(idle)");
+            seq_printf(buff, "\t\t\"PID\": \"%d\",\n\t\t\"PROCESS\": \"%s\", \n\t\t\"UID\": \"%d\", \n\t\t\"STATE\": \"%s\", \n\t\"CHILDS\":[\n", task->pid, task->comm, uid, "I(idle)");
             proc_idle++;
         }
         if(task->state == 0){
-            seq_printf(buff, "\t\tPID: \"%d\",\n\t\tPROCESS: \"%s\", \n\t\tUID: \"%d\", \n\t\tSTATE: \"%s\", \n\tCHILDS:[\n", task->pid, task->comm, uid, "R(running)");
+            seq_printf(buff, "\t\t\"PID\": \"%d\",\n\t\t\"PROCESS\": \"%s\", \n\t\t\"UID\": \"%d\", \n\t\t\"STATE\": \"%s\", \n\t\"CHILDS\":[\n", task->pid, task->comm, uid, "R(running)");
             proc_running++;
         }
         if(task->state == 1){
-            seq_printf(buff, "\t\tPID: \"%d\",\n\t\tPROCESS: \"%s\", \n\t\tUID: \"%d\", \n\t\tSTATE: \"%s\", \n\tCHILDS:[\n", task->pid, task->comm, uid, "S(sleep)");
+            seq_printf(buff, "\t\t\"PID\": \"%d\",\n\t\t\"PROCESS\": \"%s\", \n\t\t\"UID\": \"%d\", \n\t\t\"STATE\": \"%s\", \n\t\"CHILDS\":[\n", task->pid, task->comm, uid, "S(sleep)");
             proc_sleep++;
         }
 
@@ -64,15 +64,15 @@ static int myread (struct seq_file *buff, void *v){
             seq_printf(buff, "%s","{\n");
             uid = __kuid_val(task_uid(task_child));
             if(task_child->state == 1026){
-                seq_printf(buff, "\t\tPID: \"%d\",\n\t\tPROCESS: \"%s\", \n\t\tUID: \"%d\", \n\t\tSTATE: \"%s\" ", task_child->pid, task_child->comm, uid, "I(idle)");
+                seq_printf(buff, "\t\t\"PID\": \"%d\",\n\t\t\"PROCESS\": \"%s\", \n\t\t\"UID\": \"%d\", \n\t\t\"STATE\": \"%s\" ", task_child->pid, task_child->comm, uid, "I(idle)");
                 proc_idle++;
             }
             if(task_child->state == 0){
-                seq_printf(buff, "\t\tPID: \"%d\",\n\t\tPROCESS: \"%s\", \n\t\tUID: \"%d\", \n\t\tSTATE: \"%s\"", task_child->pid, task_child->comm, uid, "R(running)");
+                seq_printf(buff, "\t\t\"PID\": \"%d\",\n\t\t\"PROCESS\": \"%s\", \n\t\t\"UID\": \"%d\", \n\t\t\"STATE\": \"%s\"", task_child->pid, task_child->comm, uid, "R(running)");
                 proc_running++;
             }
             if(task_child->state == 1){
-                seq_printf(buff, "\t\tPID: \"%d\",\n\t\tPROCESS: \"%s\", \n\t\tUID: \"%d\", \n\t\tSTATE: \"%s\"", task_child->pid, task_child->comm, uid, "S(sleep)");
+                seq_printf(buff, "\t\t\"PID\": \"%d\",\n\t\t\"PROCESS\": \"%s\", \n\t\t\"UID\": \"%d\", \n\t\t\"STATE\": \"%s\"", task_child->pid, task_child->comm, uid, "S(sleep)");
                 proc_sleep++;
             }
             seq_printf(buff, "%s","\n},\n");
