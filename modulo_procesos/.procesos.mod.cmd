@@ -1,0 +1,1 @@
+cmd_/home/jairophg_lalala2014/SO2_practica1_grupo5/modulo_procesos/procesos.mod := { echo  /home/jairophg_lalala2014/SO2_practica1_grupo5/modulo_procesos/procesos.o; echo; } > /home/jairophg_lalala2014/SO2_practica1_grupo5/modulo_procesos/procesos.mod
