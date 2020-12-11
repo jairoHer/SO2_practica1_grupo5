@@ -63,11 +63,18 @@ func leerResumenProcesos(w http.ResponseWriter, r *http.Request){
 	procs = procesos{Total_proc: valores[0], Idle: valores[1], Running: valores[2], Sleep: valores[3], Stoped: valores[4],Zombie:valores[5]}
 	fmt.Println(resumen)
 	json.NewEncoder(w).Encode(procs)
-	/*fmt.Println(valores[1])
-	fmt.Println(valores[2])
-	fmt.Println(valores[3])
-	fmt.Println(valores[4])
-	fmt.Println(valores[5])*/
+}
+
+func leerTodosLosProcesos(w http.ResponseWriter, r *http.Request){
+	w.Header().Set("Content-Type", "application/json")
+	ar , err := ioutil.ReadFile("/proc/proc_procesos")
+	if err != nil {
+		fmt.Println(err)
+	}
+	entrada := string(ar)
+	entradaLimpia := strings.Split(entrada, "-------------------------------------\n")
+	procs := strings.Split(entradaLimpia[0],"\n")
+	fmt.Println(procs)
 }
 
 func obtenerResumen(entrada[] string) []string{
@@ -116,6 +123,7 @@ func handleRequests(){
 	myRouter.HandleFunc("/",homePage)
 	myRouter.HandleFunc("/info",memoria_info).Methods("GET")
 	myRouter.HandleFunc("/resumen_proc",leerResumenProcesos).Methods("GET")
+	myRouter.HandleFunc("/procesos",leerTodosLosProcesos).Methods("GET")
 	myRouter.HandleFunc("/kill",killProcess).Methods("POST")
 	log.Fatal(http.ListenAndServe(":5050",myRouter))
 }
