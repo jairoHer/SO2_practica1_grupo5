@@ -74,6 +74,7 @@ func leerTodosLosProcesos(w http.ResponseWriter, r *http.Request){
 	entrada := string(ar)
 	entradaLimpia := strings.Split(entrada, "-------------------------------------\n")
 	procs := strings.Split(entradaLimpia[0],"\n")
+	fmt.Println(entradaLimpia[1])
 	fmt.Println(procs)
 }
 
