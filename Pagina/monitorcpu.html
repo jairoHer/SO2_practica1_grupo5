@@ -1,0 +1,167 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Golang!</title>
+    <script src="static/Chart.min.js"></script>
+    <script src="static/utils.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <style>
+        canvas {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <form class="form-inline my-2 my-lg-0">
+            <img src="cpu.png" height="50" width="50" >
+    
+            <!--- <a class="navbar-brand" href="#"> Monitor del sistema</a> 
+            --->
+      
+          </form>
+
+     
+      
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="principal.html">Pagina Principal <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+              <a class="nav-link" href="monitorcpu.html">Monitor de CPU</a>
+            </li>
+          
+            <li class="nav-item active">
+              <a class="nav-link" href="monitormemoria.html">Monitor de RAM</a>
+            </li>
+          </ul>
+        
+        </div>
+      </nav>
+
+
+
+
+
+
+    <div class='canvas-container' style='width:75%;'>
+    </br>
+        <h2>Monitor de CPU</h2>
+        <canvas id="canvas"></canvas>
+    </div>
+    <br>
+    <br>
+    <input  id="tiempos" name="tiempos"></input>
+   <input  id="valores" name="valores"></input>
+    <input  id="index" ></input>
+
+    <script>
+
+function checkTime(i)
+
+{if (i<10) {i="0" + i;}return i;}
+
+       setInterval(function() {
+            //window.location.reload(1);
+            $.ajax({
+        url: "http://localhost:3030/cpu"
+    }).then(function(data) {
+        
+        $('#valores').val(data.valores);
+         
+        $('#tiempos').val(data.tiempos);
+        $('#index').val(data.index);
+       // $('input[name="valores"]').val(data.total);
+        console.log("ESTOY LLAMANDO Y EL VALOR ES "+data.libre);
+        console.log("VALORES DEL INPUT ES  "+document.getElementById('valores').value )
+        porcent=document.getElementById('valores').value;
+
+//PARTE PARA EL CANVAS
+let porcentajes = document.getElementById('valores').value.split(',');
+        let horas = document.getElementById('tiempos').value.split(',');
+        let index = document.getElementById('index').value;
+        porcentajes = porcentajes.splice(0, index);
+        horas = horas.splice(0, index);     
+           var MONTHS = horas;
+     var config = {
+            type: 'line',
+            data: {
+              labels: horas,
+              
+                datasets: [{
+                    label: 'Porcentaje de uso',
+                    backgroundColor: window.chartColors.blue,
+                    borderColor: window.chartColors.blue,
+                    data: porcentajes,
+                    pointRadius: 0,
+                    fill: false,
+                }]
+            },
+            options: {
+                animation:false,
+                responsive: true,
+                title: {
+                    display: true,
+                    text: 'Grafica de CPU',
+                    fontSize: 15,
+                    fontColor: '#000000'
+                },
+                tooltips: {
+                    mode: 'index',
+                    intersect: false,
+                },
+                hover: {
+                    mode: 'nearest',
+                    intersect: true
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Tiempo',
+                            fontSize: 15
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'CPU %',
+                            fontSize: 15
+                            
+                        },
+                        ticks: {
+                    beginAtZero: true,
+                    max: 100
+                }
+                    }]
+                }
+            }
+        };
+
+        var ctx = document.getElementById('canvas').getContext('2d');
+    window.myLine = new Chart(ctx, config);
+    });
+        }, 1000);
+         let porcent;
+        let porcentajes = document.getElementById('valores').value;
+       console.log("porcentajes es "+porcent);
+        window.onload = function() {
+     //var ctx = document.getElementById('canvas').getContext('2d');
+    //window.myLine = new Chart(ctx, config);
+        };
+    </script>
+</body>
+
+</html>

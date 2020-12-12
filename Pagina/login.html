@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>    
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <script src="static/Chart.min.js"></script>
+    <script src="static/utils.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <link href="style.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <style>
+        canvas {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <meta charset="UTF-8"/>
+    <nav class="navbar navbar-expand-lg navbar navbar-dark bg-primary">
+        <form class="form-inline my-2 my-lg-0">
+            <h1>Login </h1>
+    
+            <!--- <a class="navbar-brand" href="#"> Monitor del sistema</a> 
+            --->
+          </form>
+    </nav>
+
+    <center><table>
+        <tr>
+            <td class="font-weight-light" >Usuario</td>
+        </tr>
+        <tr>
+            <td><input  id="user" name="ejecucion" type="text" size="20" class="form-control"></td>
+        </tr>
+        <tr>
+            <td class="font-weight-light">contraseña</td>
+        </tr>
+        <tr>
+            <td><input  id="pass" name="pass" type="password" size="20" class="form-control"></td>
+        </tr>
+        <tr>
+            <td><center><button onclick="validarpass()" class="btn btn-primary">Iniciar</button></center></td>
+            
+        </tr>
+    </table></center>
+    <br>
+
+    <script>                
+        function validarpass(){
+            usuario=document.getElementById("user").value;
+            pass=document.getElementById("pass").value;
+            if(usuario=="admin" && pass=="123"){
+                window.location="principal.html"
+            }else{
+                window.alert("Usuario o contraseña incorrectos!");
+                document.getElementById("user").value="";
+                document.getElementById("pass").value="";
+            }
+        }
+    </script>
+</body>
+</html>
