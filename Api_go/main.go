@@ -30,6 +30,26 @@ type procesoBorrado struct {
 	Proceso string `json:"proceso"`
 }
 
+type todo struct {
+	Procesos []todos_procesos `json:"procesos"`
+}
+
+type todos_procesos struct {
+	Pid string `json:"pid"`
+	Process string `json:"process"`
+	Uid string `json:"uid"`
+	State string `json:"state"`
+	Childs []child `json:"childs"`
+
+}
+
+type child struct {
+	Pid string `json:"pid"`
+	Process string `json:"process"`
+	Uid string `json:"uid"`
+	State string `json:"state"`
+}
+
 func memoria_info(w http.ResponseWriter, r *http.Request){
 	ar , err := ioutil.ReadFile("/proc/m_grupo5")
 	if err != nil {
@@ -73,9 +93,12 @@ func leerTodosLosProcesos(w http.ResponseWriter, r *http.Request){
 	}
 	entrada := string(ar)
 	entradaLimpia := strings.Split(entrada, "-------------------------------------\n")
-	procs := strings.Split(entradaLimpia[0],"\n")
-	fmt.Println(entradaLimpia[1])
-	fmt.Println(procs)
+	//procs := strings.Split(entradaLimpia[0],"\n")
+	var procesoss todo
+	byteValue := []byte(entradaLimpia[0])
+	json.Unmarshal(byteValue, &procesoss)
+	json.NewEncoder(w).Encode(procesoss)
+	//fmt.Println(procs)
 }
 
 func obtenerResumen(entrada[] string) []string{
