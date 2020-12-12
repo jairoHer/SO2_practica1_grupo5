@@ -39,12 +39,22 @@ static int myread (struct seq_file *buff, void *v){
     int proc_stoped = 0;
     int proc_zombie = 0;
     int num_proc = 0;
+    int num_proceso = 0;
+    int num_proceso2= 0;
+    int num_hijo = 0;
+    int num_hijo2 = 0;
     uid_t uid;
     printk(KERN_INFO "EMPEZANDO MODULO PROCESOS\n");
     seq_printf(buff, "{%s\"procesos\":[","\n");
+    for_each_process( task ){ 
+	num_proceso2++;
+    }
     for_each_process( task ){            /*    for_each_process() es un MACRO para iterar ubicado en linux\sched\signal.h    */
         uid = __kuid_val(task_uid(task));
         num_proc++;
+	    num_proceso++;
+        num_hijo = 0;
+        num_hijo2 = 0;
         seq_printf(buff, "%s","{\n");
         if(task->state == 1026){
             seq_printf(buff, "\t\t\"PID\": \"%d\",\n\t\t\"PROCESS\": \"%s\", \n\t\t\"UID\": \"%d\", \n\t\t\"STATE\": \"%s\", \n\t\"CHILDS\":[\n", task->pid, task->comm, uid, "I(idle)");
@@ -58,8 +68,11 @@ static int myread (struct seq_file *buff, void *v){
             seq_printf(buff, "\t\t\"PID\": \"%d\",\n\t\t\"PROCESS\": \"%s\", \n\t\t\"UID\": \"%d\", \n\t\t\"STATE\": \"%s\", \n\t\"CHILDS\":[\n", task->pid, task->comm, uid, "S(sleep)");
             proc_sleep++;
         }
-
-        list_for_each(list, &task->children){                        /*    list_for_each MACRO para iterar task->children    */
+        list_for_each(list, &task->children){
+            num_hijo ++;
+        }
+        list_for_each(list, &task->children){  
+            num_hijo2++;                      /*    list_for_each MACRO para iterar task->children    */
             task_child = list_entry( list, struct task_struct, sibling );    /*    using list_entry to declare all vars in task_child struct    */
             seq_printf(buff, "%s","{\n");
             uid = __kuid_val(task_uid(task_child));
@@ -75,9 +88,19 @@ static int myread (struct seq_file *buff, void *v){
                 seq_printf(buff, "\t\t\"PID\": \"%d\",\n\t\t\"PROCESS\": \"%s\", \n\t\t\"UID\": \"%d\", \n\t\t\"STATE\": \"%s\"", task_child->pid, task_child->comm, uid, "S(sleep)");
                 proc_sleep++;
             }
-            seq_printf(buff, "%s","\n},\n");
+            if(num_hijo==num_hijo2){
+                seq_printf(buff, "%s","\n}\n");
+            }else{
+                seq_printf(buff, "%s","\n},\n");
+            }
+            //seq_printf(buff, "%s","\n},\n");
         }
-        seq_printf(buff, "%s","\t]\n\n},\n");
+        if (num_proceso==num_proceso2){
+            seq_printf(buff, "%s","\t]\n\n}\n");
+        }else{
+            seq_printf(buff, "%s","\t]\n\n},\n");
+        }
+        //seq_printf(buff, "%s","\t]\n\n},\n");
     }    
     seq_printf(buff, "%s","]}\n");
     seq_printf(buff, "%s","-------------------------------------\n");
