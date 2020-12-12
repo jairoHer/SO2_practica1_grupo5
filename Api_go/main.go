@@ -64,6 +64,7 @@ func memoria_info(w http.ResponseWriter, r *http.Request){
 	xd = Memoria{Total_RAM: Ram_tot, RAM_consumida: ram_lib, Porcentaje: porcen}
 	fmt.Println("Endpoint de los valores del modulo")
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	json.NewEncoder(w).Encode(xd)
 	fmt.Println(entrada)
 	fmt.Printf("%q\n", strings.Split(entrada, " "))
@@ -71,6 +72,7 @@ func memoria_info(w http.ResponseWriter, r *http.Request){
 
 func leerResumenProcesos(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	ar , err := ioutil.ReadFile("/proc/proc_procesos")
 	if err != nil {
 		fmt.Println(err)
@@ -87,6 +89,7 @@ func leerResumenProcesos(w http.ResponseWriter, r *http.Request){
 
 func leerTodosLosProcesos(w http.ResponseWriter, r *http.Request){
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	ar , err := ioutil.ReadFile("/proc/proc_procesos")
 	if err != nil {
 		fmt.Println(err)
@@ -116,6 +119,7 @@ func obtenerResumen(entrada[] string) []string{
 func killProcess(w http.ResponseWriter, r *http.Request){
 	//fmt.Fprintf(w, "POST para eliminar proceso")
 	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	var proce procesoBorrado
 	_ = json.NewDecoder(r.Body).Decode(&proce)
 	PID := string(proce.Proceso)
