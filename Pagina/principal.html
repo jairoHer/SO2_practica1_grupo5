@@ -96,8 +96,9 @@
         setInterval(function() {
                 //window.location.reload(1);
             // OBTIENE EL RESUMEN DE LOS PROCESOS
+            /*
             $.ajax({
-                url: "http://34.121.129.76:5050/resumen_proc"
+                url: "http://35.232.230.49:5050/resumen_proc"
             }).then(function(data) {  
                 console.log("Datos retornados: ");
                 console.log(data);
@@ -107,11 +108,81 @@
                 $('#zombies').val(data.zombie);
                 $('#total').val(data.total);  
             
-            });
-            //OBTIENE TODOS LOS PROCESOS CON SUS HIJOS
+            });*/
+            
             $.ajax({
-                url: "http://34.121.129.76:5050/procesos"
+                url: "http://35.232.230.49:5050/todo",
+                type: "GET",
+                success: function(data) { 
+                    console.log("Datos retornados: ");
+                    console.log(data);
+                    $('#ejecucion').val(data.running);            
+                    $('#suspendidos').val(data.sleep);
+                    $('#detenidos').val(parseInt(data.stoped, 10) + parseInt(data.idle, 10));
+                    $('#zombies').val(data.zombie);
+                    $('#total').val(data.total_procesos);  
+                    let tabla="<center><table border=\"1\" >\n<tr>\n<td>PID</td>\n<td>NOMBRE</td>\n<td>ESTADO</td>\n<td>USUARIO</td>\n<td>KILL</td>\n</tr>";
+                    for(proceso of data.procesos){
+                        //RECORRO CADA PROCESO
+                        tabla+="<tr>\n"
+                        tabla+="<td>\n"
+                        tabla+=proceso.PID;
+                        tabla+="\n</td>"
+                        tabla+="<td>\n"
+                        tabla+=proceso.PROCESS;
+                        tabla+="\n</td>"
+                        tabla+="<td>\n"
+                        tabla+=proceso.STATE;
+                        tabla+="\n</td>"
+                        tabla+="<td>\n"
+                        tabla+=proceso.UID;
+                        tabla+="\n</td>"
+                        tabla+="<td>";
+                        tabla+="<input type=\"button\" value=\"KILL\" onclick=\"javascript:enviardatos('"+proceso.PID+"')\" name=\""+proceso.PDI+"\"/></td>"
+                        tabla+="</tr>\n"
+                    }
+                    tabla+="</table></center>\n"
+                    document.getElementById("tablaprocesos").innerHTML=tabla;
+                }
+		    });
+            /*
+            $.ajax({
+                url: "http://35.232.230.49:5050/procesos",
+                type: "GET",
+                success: function(data) { 
+                    console.log("Datos retornados del arbol: ");
+                    console.log(data);
+                    let tabla="<center><table border=\"1\" >\n<tr>\n<td>PID</td>\n<td>NOMBRE</td>\n<td>ESTADO</td>\n<td>USUARIO</td>\n<td>KILL</td>\n</tr>";
+                    /*for(proceso of data){
+                        //RECORRO CADA PROCESO
+                        tabla+="<tr>\n"
+                        tabla+="<td>\n"
+                        tabla+=proceso.pid;
+                        tabla+="\n</td>"
+                        tabla+="<td>\n"
+                        tabla+=proceso.process;
+                        tabla+="\n</td>"
+                        tabla+="<td>\n"
+                        tabla+=proceso.state;
+                        tabla+="\n</td>"
+                        tabla+="<td>\n"
+                        tabla+=proceso.uid;
+                        tabla+="\n</td>"
+                        tabla+="<td>";
+                        tabla+="<input type=\"button\" value=\"KILL\" onclick=\"javascript:enviardatos('"+proceso.pid+"')\" name=\""+proceso.pid+"\"/></td>"
+                        tabla+="</tr>\n"
+                    }
+                    tabla+="</table></center>\n"
+                    document.getElementById("tablaprocesos").innerHTML=tabla;
+                }
+		    });*/
+            //OBTIENE TODOS LOS PROCESOS CON SUS HIJOS
+            /*
+            $.ajax({
+                url: "http://35.232.230.49:5050/procesos"
             }).then(function(data) {
+                console.log("Datos retornados del arbol: ");
+                console.log(data);
                 let tabla="<center><table border=\"1\" >\n<tr>\n<td>PID</td>\n<td>NOMBRE</td>\n<td>ESTADO</td>\n<td>USUARIO</td>\n<td>KILL</td>\n</tr>";
                 for(proceso of data){
                     //RECORRO CADA PROCESO
@@ -134,6 +205,7 @@
                 }
                 tabla+="</table></center>\n"
                 document.getElementById("tablaprocesos").innerHTML=tabla;
+
                  /*
                 let datos= data.datos;
                 let arbol=data.arbol;
@@ -190,10 +262,10 @@
                     }
                 }
                 textoarbol+="</div>"
-                document.getElementById("arbolprocesos").innerHTML=textoarbol;*/
-            });
+                document.getElementById("arbolprocesos").innerHTML=textoarbol;
+            });*/
             
-        },1000);
+        },3000);
         function escribirarbol(arbol,padre,cont){
             let texto="";
             if(padre===undefined){

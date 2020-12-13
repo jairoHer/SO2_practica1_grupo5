@@ -9,6 +9,8 @@
     <link rel="stylesheet" type="text/css" href="static/style.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+<script type="text/javascript" src="jscript/graph.js"></script>
     <style>
         canvas {
             -moz-user-select: none;
@@ -66,7 +68,9 @@
     <input  id="index" ></input>
 
     <script>
-
+    var indexg=0;
+    var valores=[];
+    var tiempos=[];
 function checkTime(i)
 
 {if (i<10) {i="0" + i;}return i;}
@@ -74,16 +78,21 @@ function checkTime(i)
        setInterval(function() {
             //window.location.reload(1);
             $.ajax({
-        url: "http://localhost:3030/obtenerram"
+        url: "http://35.232.230.49:5050/info"
     }).then(function(data) {
-        
-        $('#valores').val(data.valores);
+        valores.push(data.porcentaje);
+        var hoy = new Date();
+        var hora=hoy.getHours() + ':' + hoy.getMinutes() + ':' + hoy.getSeconds();
+        tiempos.push(hora);
+        $('#valores').val(valores);
          
-        $('#tiempos').val(data.tiempos);
-        $('#index').val(data.index);
+        $('#tiempos').val(tiempos);
+        $('#index').val(indexg);
+        indexg+=1;
        // $('input[name="valores"]').val(data.total);
-        console.log("ESTOY LLAMANDO Y EL VALOR ES "+data.libre);
+        console.log("ESTOY LLAMANDO Y EL VALOR ES "+data.consumida);
         console.log("VALORES DEL INPUT ES "+document.getElementById('valores').value )
+        console.log("EL VALOR DEL INDEX ES: " + indexg);
         porcent=document.getElementById('valores').value;
 
 //PARTE PARA EL CANVAS
@@ -100,8 +109,8 @@ let porcentajes = document.getElementById('valores').value.split(',');
               
                 datasets: [{
                     label: 'Porcentaje de uso',
-                    backgroundColor: window.chartColors.blue,
-                    borderColor: window.chartColors.blue,
+                    backgroundColor: 'rgb(54, 162, 235)',
+                    borderColor: 'rgb(54, 162, 235)',
                     data: porcentajes,
                     pointRadius: 0,
                     fill: false,
