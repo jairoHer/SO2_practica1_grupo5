@@ -76,7 +76,12 @@ func toditotodito(w http.ResponseWriter, r *http.Request){
 	//var completo todoUnificado
 	out := map[string]interface{}{}
 	json.Unmarshal(byteValue, &out)
-	out["total_proc"] = valores[0]
+	out["total_procesos"] = valores[0]
+	out["idle"] = valores[1]
+	out["running"] = valores[2]
+	out["sleep"] = valores[3]
+	out["stoped"] = valores[4]
+	out["zombie"] = valores[5]
 	json.NewEncoder(w).Encode(out)
 	
 	//completo = todoUnificado{Procesos:procesoss,Total_proc: valores[0], Idle: valores[1], Running: valores[2], Sleep: valores[3], Stoped: valores[4],Zombie:valores[5]}
