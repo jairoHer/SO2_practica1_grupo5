@@ -50,6 +50,41 @@ type child struct {
 	State string `json:"state"`
 }
 
+type todoUnificado struct {
+	Procesos []todo `json:"procesos"`
+	Total_proc string `json:"total_procesos"`
+	Idle string `json:"idle"`
+	Running string `json:"running"`
+	Sleep string `json:"sleep"`
+	Stoped string `json:"stoped"`
+	Zombie string `json:"zombie"`
+}
+func toditotodito(w http.ResponseWriter, r *http.Request){
+	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	
+	proc_data , err2 := ioutil.ReadFile("/proc/proc_procesos")
+	if err2 != nil {
+		fmt.Println(err2)
+	}
+	entradaProc := string(proc_data)
+	entradaLimpiap := strings.Split(entradaProc, "-------------------------------------\n")
+	resumen := strings.Split(entradaLimpiap[1],"\n")
+	byteValue := []byte(entradaLimpiap[0])
+	valores :=  obtenerResumen(resumen)
+	//var procesoss todo
+	//var completo todoUnificado
+	out := map[string]interface{}{}
+	json.Unmarshal(byteValue, &out)
+	out["total_proc"] = valores[0]
+	json.NewEncoder(w).Encode(out)
+	
+	//completo = todoUnificado{Procesos:procesoss,Total_proc: valores[0], Idle: valores[1], Running: valores[2], Sleep: valores[3], Stoped: valores[4],Zombie:valores[5]}
+
+
+}
+
+
 func memoria_info(w http.ResponseWriter, r *http.Request){
 	ar , err := ioutil.ReadFile("/proc/m_grupo5")
 	if err != nil {
@@ -150,6 +185,7 @@ func handleRequests(){
 	myRouter := mux.NewRouter().StrictSlash(true)
 	myRouter.HandleFunc("/",homePage)
 	myRouter.HandleFunc("/info",memoria_info).Methods("GET")
+	myRouter.HandleFunc("/todo",toditotodito).Methods("GET")
 	myRouter.HandleFunc("/resumen_proc",leerResumenProcesos).Methods("GET")
 	myRouter.HandleFunc("/procesos",leerTodosLosProcesos).Methods("GET")
 	myRouter.HandleFunc("/kill",killProcess).Methods("POST")
