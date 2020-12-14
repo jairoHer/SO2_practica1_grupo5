@@ -1,0 +1,389 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Golang!</title>
+    <script src="static/Chart.min.js"></script>
+    <script src="static/utils.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/style.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <style>
+        canvas {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <form class="form-inline my-2 my-lg-0">
+            <img src="cpu.png" height="50" width="50" >
+    
+            <!--- <a class="navbar-brand" href="#"> Monitor del sistema</a> 
+            --->
+      
+          </form>
+
+     
+      
+      
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+              <a class="nav-link" href="principal.html">Pagina Principal <span class="sr-only">(current)</span></a>
+            </li>
+          
+            <li class="nav-item active">
+              <a class="nav-link" href="monitormemoria.html">Monitor de RAM</a>
+            </li>
+          </ul>
+        
+        </div>
+    </nav>
+    <div class='canvas-container' style='width:75%;'>
+    </br>
+        <center><h2>Pagina Principal</h2></center>
+    </div>
+    <table>
+        <tr>
+            <td>Procesos en ejecucion:</td><td><input  id="ejecucion" name="ejecucion" type="text" size="20"></input></td>
+        </tr>
+        <tr>
+            <td>Procesos suspendidos:</td><td><input  id="suspendidos" name="suspendidos" type="text" size="20"></input></td>
+        </tr>
+        <tr>
+            <td>Procesos detenidos:</td><td><input  id="detenidos" name="detenidos" type="text" size="20"></input</td>
+        </tr>
+        <tr>
+            <td>Procesos zombies:</td><td><input  id="zombies" name="zombies" type="text" size="20"></input></td>
+        </tr>
+        <tr>
+            <td>Procesos totales:</td><td><input  id="total" name="total" type="text" size="20"></input></td>
+        </tr>
+    </table> 
+    <br>
+    <center><h3>Tabla de procesos</h3></center>
+    <div id="tablaprocesos" ></div>
+    <br>
+    <h2>Arbol dinamico:</h2></br>
+    <div id="arbolprocesos" style=" margin: 10px 0 0 100px; color:red;" ></div>
+    <br>
+    <br>
+    <script>
+    var textoanterior="";
+    function changeDisplay (id) {
+      e=document.getElementById("hijos"+id);
+      t=document.getElementById("texto"+id);
+      if (e.style.display == 'none' || e.style.display == "") {
+        e.style.display = 'block';
+        t.style.color="black";
+      } else {
+        e.style.display = 'none';
+        t.style.color="red";
+      }
+    }
+    let contador=0;
+    let contadoranterior=0;
+    function checkTime(i)
+
+    {if (i<10) {i="0" + i;}return i;}
+
+        setInterval(function() {
+                //window.location.reload(1);
+            // OBTIENE EL RESUMEN DE LOS PROCESOS
+            /*
+            $.ajax({
+                url: "http://35.232.230.49:5050/resumen_proc"
+            }).then(function(data) {  
+                console.log("Datos retornados: ");
+                console.log(data);
+                $('#ejecucion').val(data.running);            
+                $('#suspendidos').val(data.sleep);
+                $('#detenidos').val(data.stoped + data.idle);
+                $('#zombies').val(data.zombie);
+                $('#total').val(data.total);  
+            
+            });*/
+            
+            $.ajax({
+                url: "http://35.232.230.49:5050/todo",
+                type: "GET",
+                success: function(data) {
+                    console.log("Datos retornados: ");
+                    console.log(data);
+                    contadoranterior=contador;
+                    contador=0;
+                    $('#ejecucion').val(data.running);            
+                    $('#suspendidos').val(data.sleep);
+                    $('#detenidos').val(parseInt(data.stoped, 10) + parseInt(data.idle, 10));
+                    $('#zombies').val(data.zombie);
+                    $('#total').val(data.total_procesos);  
+                    let tabla="<center><table border=\"1\" >\n<tr>\n<td>PID</td>\n<td>NOMBRE</td>\n<td>ESTADO</td>\n<td>USUARIO</td>\n<td>KILL</td>\n</tr>";
+                    let textoarbol="<div \"style=\"margin: 10px 0 0 10px;\">\n";
+                    for(proceso of data.procesos){
+                        //RECORRO CADA PROCESO
+                        tabla+="<tr>\n"
+                        tabla+="<td>\n"
+                        tabla+=proceso.PID;
+                        tabla+="\n</td>"
+                        tabla+="<td>\n"
+                        tabla+=proceso.PROCESS;
+                        tabla+="\n</td>"
+                        tabla+="<td>\n"
+                        tabla+=proceso.STATE;
+                        tabla+="\n</td>"
+                        tabla+="<td>\n"
+                        tabla+=proceso.UID;
+                        tabla+="\n</td>"
+                        tabla+="<td>";
+                        tabla+="<input type=\"button\" value=\"KILL\" onclick=\"javascript:enviardatos('"+proceso.PID+"')\" name=\""+proceso.PDI+"\"/></td>"
+                        tabla+="</tr>\n"
+                        contador++;
+                        //HACIENDO EL ARBOL
+                        if(proceso.CHILDS.length>0){
+                            textoarbol+="<a id = \"texto"+proceso.PID+"\"href=\"javascript:changeDisplay('"+proceso.PID+"')\"style=\"margin: "+10+"px 0 0 25px; color: red; font-style: italic;border: solid red;font-size: 20pt;\">id: "+proceso.PID+" nombre: "+proceso.PROCESS+"\n</a></br>"
+                        }else{
+                            textoarbol+="<a id = \"texto"+proceso.PID+"\"style=\"margin: "+10+"px 0 0 25px;color: black; font-style: italic;border: solid black;font-size: 20pt;\">id: "+proceso.PID+" nombre: "+proceso.PROCESS+"\n</a></br>"
+                        }
+                        textoarbol+="<div id=\"hijos"+proceso.PID+"\" style=\"display:none; margin: 10px 0 0 25px; color:red;\">\n"
+                        for(procesohijo of proceso.CHILDS){
+                            tabla+="<tr>\n"
+                            tabla+="<td>\n"
+                            tabla+=procesohijo.PID;
+                            tabla+="\n</td>"
+                            tabla+="<td>\n"
+                            tabla+=procesohijo.PROCESS;
+                            tabla+="\n</td>"
+                            tabla+="<td>\n"
+                            tabla+=procesohijo.STATE;
+                            tabla+="\n</td>"
+                            tabla+="<td>\n"
+                            tabla+=procesohijo.UID;
+                            tabla+="\n</td>"
+                            tabla+="<td>";
+                            tabla+="<input type=\"button\" value=\"KILL\" onclick=\"javascript:enviardatos('"+procesohijo.PID+"')\" name=\""+procesohijo.PDI+"\"/></td>"
+                            tabla+="</tr>\n"
+                            contador++;
+                            //HACIENDO HIJOS DEL ARBOL
+                            textoarbol+="<a id = \"texto"+procesohijo.PID+"\"style=\"margin: "+60+"px 0 0 25px;color: black; font-style: italic;border: solid black;font-size: 20pt;\">id: "+procesohijo.PID+" nombre: "+procesohijo.PROCESS+"\n</a></br>"
+                        }
+                        textoarbol+="</div>";
+                    }
+                    tabla+="</table></center>\n";
+                    textoarbol+="</div>";
+                    document.getElementById("tablaprocesos").innerHTML=tabla;
+                    console.log("Se encontro un total de: "+contador + " y antes: " + contadoranterior);
+                    if(contador!=contadoranterior){
+                        document.getElementById("arbolprocesos").innerHTML=textoarbol;
+                    }
+                }
+		    });
+            /*
+            $.ajax({
+                url: "http://35.232.230.49:5050/procesos",
+                type: "GET",
+                success: function(data) { 
+                    console.log("Datos retornados del arbol: ");
+                    console.log(data);
+                    let tabla="<center><table border=\"1\" >\n<tr>\n<td>PID</td>\n<td>NOMBRE</td>\n<td>ESTADO</td>\n<td>USUARIO</td>\n<td>KILL</td>\n</tr>";
+                    /*for(proceso of data){
+                        //RECORRO CADA PROCESO
+                        tabla+="<tr>\n"
+                        tabla+="<td>\n"
+                        tabla+=proceso.pid;
+                        tabla+="\n</td>"
+                        tabla+="<td>\n"
+                        tabla+=proceso.process;
+                        tabla+="\n</td>"
+                        tabla+="<td>\n"
+                        tabla+=proceso.state;
+                        tabla+="\n</td>"
+                        tabla+="<td>\n"
+                        tabla+=proceso.uid;
+                        tabla+="\n</td>"
+                        tabla+="<td>";
+                        tabla+="<input type=\"button\" value=\"KILL\" onclick=\"javascript:enviardatos('"+proceso.pid+"')\" name=\""+proceso.pid+"\"/></td>"
+                        tabla+="</tr>\n"
+                    }
+                    tabla+="</table></center>\n"
+                    document.getElementById("tablaprocesos").innerHTML=tabla;
+                }
+		    });*/
+            //OBTIENE TODOS LOS PROCESOS CON SUS HIJOS
+            /*
+            $.ajax({
+                url: "http://35.232.230.49:5050/procesos"
+            }).then(function(data) {
+                console.log("Datos retornados del arbol: ");
+                console.log(data);
+                let tabla="<center><table border=\"1\" >\n<tr>\n<td>PID</td>\n<td>NOMBRE</td>\n<td>ESTADO</td>\n<td>USUARIO</td>\n<td>KILL</td>\n</tr>";
+                for(proceso of data){
+                    //RECORRO CADA PROCESO
+                    tabla+="<tr>\n"
+                    tabla+="<td>\n"
+                    tabla+=proceso.pid;
+                    tabla+="\n</td>"
+                    tabla+="<td>\n"
+                    tabla+=proceso.process;
+                    tabla+="\n</td>"
+                    tabla+="<td>\n"
+                    tabla+=proceso.state;
+                    tabla+="\n</td>"
+                    tabla+="<td>\n"
+                    tabla+=proceso.uid;
+                    tabla+="\n</td>"
+                    tabla+="<td>";
+                    tabla+="<input type=\"button\" value=\"KILL\" onclick=\"javascript:enviardatos('"+proceso.pid+"')\" name=\""+proceso.pid+"\"/></td>"
+                    tabla+="</tr>\n"
+                }
+                tabla+="</table></center>\n"
+                document.getElementById("tablaprocesos").innerHTML=tabla;
+
+                 /*
+                let datos= data.datos;
+                let arbol=data.arbol;
+                let splitsalto=datos.split("\n");
+                let tabla="<center><table border=\"1\" >\n<tr>\n<td>PID</td>\n<td>NOMBRE</td>\n<td>ESTADO</td>\n<td>USUARIO</td>\n<td>% RAM</td>\n<td>KILL</td>\n</tr>";
+                for(let i=0;i<splitsalto.length-1;i++){
+                    tabla+="<tr>\n"
+                    let splitcoma=splitsalto[i].split(",");
+                    for(let j=0;j<splitcoma.length;j++){
+                        tabla+="<td>\n"
+                        tabla+=splitcoma[j];
+                        tabla+="\n</td>"
+                    }
+                    tabla+="<td>";
+                    tabla+="<input type=\"button\" value=\"KILL\" onclick=\"javascript:enviardatos('"+splitcoma[0]+"')\" name=\""+splitcoma[0]+"\"/></td>"
+                    tabla+="</tr>\n"
+                }
+                tabla+="</table></center>\n"
+                document.getElementById("tablaprocesos").innerHTML=tabla;
+                //CREANDO ESTRUCTURA DE ARBOL
+                if(textoanterior==arbol){
+                    console.log("El texto es el mismo que el anterior");
+                    return;
+                }else{
+                    textoanterior=arbol;    
+                }
+                let splitsaltoarbol=arbol.split("\n");
+                var h=new Object();
+                for(let i=0;i<splitsaltoarbol.length-1;i++){
+                    let splitcomaarbol=splitsaltoarbol[i].split(",");
+                    //primera posicion es el padre
+                    //las demas posiciones son los hijos (id:nombre)
+                    if(h[splitcomaarbol[0]]===undefined){
+                        //SI NO EXISTE ESTE PADRE
+                        var objpadre={id:splitcomaarbol[0],hijos:[]}
+                        h[splitcomaarbol[0]]=objpadre;
+                    }
+                    for(let j=1;j<splitcomaarbol.length;j++){
+                        let splitpuntos=splitcomaarbol[j].split(":");
+                        var objhijo={id:splitpuntos[0],nombre:splitpuntos[1]}
+                        h[splitcomaarbol[0]]["hijos"].push(objhijo);
+                    }
+                }
+                //tengo en h todos los padres
+                let textoarbol="<div \"style=\"margin: 10px 0 0 10px;\">\n";
+                cont=10;
+                for(let i in h){
+                    if(h[i]===undefined){
+
+                    }else{
+                        //SI TIENE ALGO 
+                        textoarbol+=escribirarbol(h,h[i],cont);
+                        cont+=10;
+                    }
+                }
+                textoarbol+="</div>"
+                document.getElementById("arbolprocesos").innerHTML=textoarbol;
+            });*/
+            
+        },3000);
+        function escribirarbol(arbol,padre,cont){
+            let texto="";
+            if(padre===undefined){
+                //console.log("Encontro indefinidos\n"); NO SON PADRES, SOLO HIJOS
+            }else{
+                //SI TIENE ALGO 
+                //textoarbol+=escribirarbol(h,h[i]);
+                texto+="<a id = \"texto"+padre["id"]+"\"href=\"javascript:changeDisplay('"+padre["id"]+"')\"style=\"margin: "+cont+"px 0 0 25px; color: red; font-style: italic;border: solid red;font-size: 20pt;\">"+padre["id"]+"\n</a></br>"
+                texto+="<div id=\"hijos"+padre["id"]+"\" style=\"display:none; margin: 10px 0 0 25px; color:red;\">\n"
+               // for(let i in padre["hijos"]){
+                  //  texto+="<a href=\"javascript:changeDisplay('"+i["id"]+"')\">"+i["id"]+":"+i["nombre"]+"\n</a>"
+               //     texto+=escribirarbol(arbol,arbol[i["id"]]);
+               // }
+                //console.log("Haciendo padre con "+padre["hijos"].length+" hijos\n");
+                for(let i=0;i<padre["hijos"].length;i++){
+                    //texto+="<a href=\"javascript:changeDisplay('"+padre["hijos"][i]["id"]+"')\">"+padre["hijos"][i]["id"]+":"+padre["hijos"][i]["nombre"]+"\n</a>"
+                    //texto+=
+                    if(arbol[padre["hijos"][i]["id"]]===undefined){
+                        texto+="<a id = \"texto"+padre["hijos"][i]["id"]+"\"style=\"margin: "+(i*30)+"px 0 0 25px;color: black; font-style: italic;border: solid black;font-size: 20pt;\">id: "+padre["hijos"][i]["id"]+" nombre: "+padre["hijos"][i]["nombre"]+"\n</a></br>"
+                    }else{
+                        texto+=escribirarbol(arbol,arbol[padre["hijos"][i]["id"]],(i*30));
+                        arbol[padre["hijos"][i]["id"]]=undefined;
+                    }
+                    
+                }
+                
+                texto+="</div>"
+            }
+            return texto;
+        }
+        function enviardatos(id){
+            var request = new XMLHttpRequest();
+            request.open('POST', 'http://35.232.230.49:5050/kill', true);
+            request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
+
+            var data = {proceso: id};
+            request.send(JSON.stringify(data));
+            /*
+            $.ajax({
+                    url: "http://35.232.230.49:5050/kill",
+                    type: "POST",				
+                    dataType: 'json',
+                    data: JSON.stringify(enviar),
+                    contentType: "application/json", 
+                    crossDomain: true,
+                    success: function(r) {   
+                        console.log("TODO CORRECTO");                      
+                        console.log(r); 
+                    },
+                    error: function(err){                        
+                        console.log(err);
+                    }
+                });*/
+        }
+        window.onload = function() {
+        };
+        /* PARA AGREGAR LOS BOTONES
+        <script type="text/javascript">
+  function changeLink (id, url) {
+    document.getElementById(id).innerHTML = "Visitar "+url;
+    document.getElementById(id).href = url;
+  }
+
+<a id="enlace" target="_blank" href="#">Visitar ???</a>
+
+<input type="button" 
+       onclick="changeLink('enlace', 'www.google.com')" 
+       value="Google" />
+
+       FORMULARIO
+        <form name="formulario" 
+        action="mailto:micorreo@midominio.com"
+        onsubmit="return validar()">
+    Nombre: <input type="text" id="nombre" size="20" /> <br />
+    E-mail: <input type="text" id="email" size="20" /> <br />
+    <br />
+    <input type="submit" value="Enviar" />
+    </form>
+        */
+
+    </script>    
+</body>
+</html>
