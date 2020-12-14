@@ -37,9 +37,6 @@
             <li class="nav-item active">
               <a class="nav-link" href="principal.html">Pagina Principal <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item active">
-              <a class="nav-link" href="monitorcpu.html">Monitor de CPU</a>
-            </li>
           
             <li class="nav-item active">
               <a class="nav-link" href="monitormemoria.html">Monitor de RAM</a>
@@ -50,7 +47,7 @@
     </nav>
     <div class='canvas-container' style='width:75%;'>
     </br>
-        <h2>Pagina Principal</h2>
+        <center><h2>Pagina Principal</h2></center>
     </div>
     <table>
         <tr>
@@ -70,6 +67,7 @@
         </tr>
     </table> 
     <br>
+    <center><h3>Tabla de procesos</h3></center>
     <div id="tablaprocesos" ></div>
     <br>
     <h2>Arbol dinamico:</h2></br>
@@ -89,6 +87,8 @@
         t.style.color="red";
       }
     }
+    let contador=0;
+    let contadoranterior=0;
     function checkTime(i)
 
     {if (i<10) {i="0" + i;}return i;}
@@ -113,15 +113,18 @@
             $.ajax({
                 url: "http://35.232.230.49:5050/todo",
                 type: "GET",
-                success: function(data) { 
+                success: function(data) {
                     console.log("Datos retornados: ");
                     console.log(data);
+                    contadoranterior=contador;
+                    contador=0;
                     $('#ejecucion').val(data.running);            
                     $('#suspendidos').val(data.sleep);
                     $('#detenidos').val(parseInt(data.stoped, 10) + parseInt(data.idle, 10));
                     $('#zombies').val(data.zombie);
                     $('#total').val(data.total_procesos);  
                     let tabla="<center><table border=\"1\" >\n<tr>\n<td>PID</td>\n<td>NOMBRE</td>\n<td>ESTADO</td>\n<td>USUARIO</td>\n<td>KILL</td>\n</tr>";
+                    let textoarbol="<div \"style=\"margin: 10px 0 0 10px;\">\n";
                     for(proceso of data.procesos){
                         //RECORRO CADA PROCESO
                         tabla+="<tr>\n"
@@ -140,9 +143,44 @@
                         tabla+="<td>";
                         tabla+="<input type=\"button\" value=\"KILL\" onclick=\"javascript:enviardatos('"+proceso.PID+"')\" name=\""+proceso.PDI+"\"/></td>"
                         tabla+="</tr>\n"
+                        contador++;
+                        //HACIENDO EL ARBOL
+                        if(proceso.CHILDS.length>0){
+                            textoarbol+="<a id = \"texto"+proceso.PID+"\"href=\"javascript:changeDisplay('"+proceso.PID+"')\"style=\"margin: "+10+"px 0 0 25px; color: red; font-style: italic;border: solid red;font-size: 20pt;\">id: "+proceso.PID+" nombre: "+proceso.PROCESS+"\n</a></br>"
+                        }else{
+                            textoarbol+="<a id = \"texto"+proceso.PID+"\"style=\"margin: "+10+"px 0 0 25px;color: black; font-style: italic;border: solid black;font-size: 20pt;\">id: "+proceso.PID+" nombre: "+proceso.PROCESS+"\n</a></br>"
+                        }
+                        textoarbol+="<div id=\"hijos"+proceso.PID+"\" style=\"display:none; margin: 10px 0 0 25px; color:red;\">\n"
+                        for(procesohijo of proceso.CHILDS){
+                            tabla+="<tr>\n"
+                            tabla+="<td>\n"
+                            tabla+=procesohijo.PID;
+                            tabla+="\n</td>"
+                            tabla+="<td>\n"
+                            tabla+=procesohijo.PROCESS;
+                            tabla+="\n</td>"
+                            tabla+="<td>\n"
+                            tabla+=procesohijo.STATE;
+                            tabla+="\n</td>"
+                            tabla+="<td>\n"
+                            tabla+=procesohijo.UID;
+                            tabla+="\n</td>"
+                            tabla+="<td>";
+                            tabla+="<input type=\"button\" value=\"KILL\" onclick=\"javascript:enviardatos('"+procesohijo.PID+"')\" name=\""+procesohijo.PDI+"\"/></td>"
+                            tabla+="</tr>\n"
+                            contador++;
+                            //HACIENDO HIJOS DEL ARBOL
+                            textoarbol+="<a id = \"texto"+procesohijo.PID+"\"style=\"margin: "+60+"px 0 0 25px;color: black; font-style: italic;border: solid black;font-size: 20pt;\">id: "+procesohijo.PID+" nombre: "+procesohijo.PROCESS+"\n</a></br>"
+                        }
+                        textoarbol+="</div>";
                     }
-                    tabla+="</table></center>\n"
+                    tabla+="</table></center>\n";
+                    textoarbol+="</div>";
                     document.getElementById("tablaprocesos").innerHTML=tabla;
+                    console.log("Se encontro un total de: "+contador + " y antes: " + contadoranterior);
+                    if(contador!=contadoranterior){
+                        document.getElementById("arbolprocesos").innerHTML=textoarbol;
+                    }
                 }
 		    });
             /*
@@ -298,11 +336,27 @@
         }
         function enviardatos(id){
             var request = new XMLHttpRequest();
-            request.open('POST', 'http://localhost:5050/kill', true);
+            request.open('POST', 'http://35.232.230.49:5050/kill', true);
             request.setRequestHeader('Content-Type', 'application/json; charset=UTF-8');
 
             var data = {proceso: id};
             request.send(JSON.stringify(data));
+            /*
+            $.ajax({
+                    url: "http://35.232.230.49:5050/kill",
+                    type: "POST",				
+                    dataType: 'json',
+                    data: JSON.stringify(enviar),
+                    contentType: "application/json", 
+                    crossDomain: true,
+                    success: function(r) {   
+                        console.log("TODO CORRECTO");                      
+                        console.log(r); 
+                    },
+                    error: function(err){                        
+                        console.log(err);
+                    }
+                });*/
         }
         window.onload = function() {
         };

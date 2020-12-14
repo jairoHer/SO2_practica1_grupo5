@@ -39,9 +39,6 @@
             <li class="nav-item active">
               <a class="nav-link" href="principal.html">Pagina Principal <span class="sr-only">(current)</span></a>
             </li>
-            <li class="nav-item active">
-              <a class="nav-link" href="monitorcpu.html">Monitor de CPU</a>
-            </li>
           
             <li class="nav-item active">
               <a class="nav-link" href="monitormemoria.html">Monitor de RAM</a>
@@ -63,6 +60,25 @@
     </div>
     <br>
     <br>
+    <center><table>
+        <tr>
+            <td class="font-weight-light" >Total de memoria: </td>
+
+            <td><input  id="total" name="ejecucion" type="text" size="20" class="form-control" disabled="disabled"></td>
+        </tr>
+            
+        <tr>
+            <td class="font-weight-light" >Memoria consumida: </td>
+
+            <td><input  id="consumida" name="ejecucion" type="text" size="20" class="form-control" disabled="disabled"></td>
+        </tr>
+            
+        <tr>
+            <td class="font-weight-light" >Porcentaje de memoria consumida(%):</td>
+
+            <td><input  id="porcentaje" name="ejecucion" type="text" size="20" class="form-control" disabled="disabled"></td>
+        </tr>
+    </table></center>
     <input  id="tiempos" name="tiempos"></input>
    <input  id="valores" name="valores"></input>
     <input  id="index" ></input>
@@ -88,6 +104,9 @@ function checkTime(i)
          
         $('#tiempos').val(tiempos);
         $('#index').val(indexg);
+        $('#total').val(data.total);
+        $('#consumida').val(data.consumida);
+        $('#porcentaje').val(data.porcentaje);
         indexg+=1;
        // $('input[name="valores"]').val(data.total);
         console.log("ESTOY LLAMANDO Y EL VALOR ES "+data.consumida);
